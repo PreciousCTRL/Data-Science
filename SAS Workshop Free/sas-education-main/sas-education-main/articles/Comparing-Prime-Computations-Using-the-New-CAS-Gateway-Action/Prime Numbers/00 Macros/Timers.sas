@@ -1,0 +1,33 @@
+************************************************************;
+** timer_init(profilingEnabled): initialize timers.       **;
+**   profilingEnabled: Y means profiling is on.           **;
+************************************************************;
+%macro timer_init(perfTable);
+	%global _timer_start;
+	proc sql noerrorstop;
+		drop table &perfTable;
+	quit;
+%mend;
+
+************************************************************;
+** timer_start(desc): start timing a code block.          **;
+**   desc: a description of the block.                    **;
+************************************************************;
+%macro timer_start();
+	%let _timer_start = %sysfunc(datetime());
+%mend;
+
+************************************************************;
+** timer_stop(desc): stop timing a code block.            **;
+**   desc: a description of the block.                    **;
+************************************************************;
+%macro timer_stop(perfTable, step, recordMax);
+	data _tick;
+		length step $ 256;
+		step="&step";
+		observations = &recordMax;
+		dur = datetime() - &_timer_start;
+	run;
+	proc append base=&perfTable data=_tick force;
+	quit;
+%mend;

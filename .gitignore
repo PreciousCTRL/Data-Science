@@ -1,0 +1,6 @@
+.user-python-packages/
+catboost_info/
+*.so
+*.csv
+__pycache__/
+.venv/
